@@ -17,12 +17,14 @@ namespace BlogsConsole
 
             do
             {   //menu for app
-                Console.WriteLine("Blogs-Consol Application");
+                Console.WriteLine("Blogs-Console Application");
                 Console.WriteLine("========================");
                 Console.WriteLine("1-Display all blogs");
                 Console.WriteLine("2-Add blog");
                 Console.WriteLine("3-Create post");
+                Console.WriteLine("4-Display posts");
                 Console.WriteLine("5-Exit program");
+                Console.Write("Enter your selection 1-5: ");
                 menuOption = Console.ReadLine();
 
                 if (menuOption == "1")
@@ -30,7 +32,12 @@ namespace BlogsConsole
                     try
                     {
                         // Display all Blogs from the database - this is LINQ
+                        logger.Info("Option {menuOption} selected", menuOption);
+
                         var query = db.Blogs.OrderBy(b => b.BlogId);
+                        var count = db.Blogs.Count();
+
+                        Console.WriteLine(count + " Blogs returned");
 
                         Console.WriteLine("All blogs in the database:");
                         foreach (var item in query)
@@ -38,6 +45,9 @@ namespace BlogsConsole
                             Console.Write(item.BlogId + "-");
                             Console.WriteLine(item.Name);
                         }
+
+                        Console.WriteLine();
+
                     }
                     catch (Exception ex)
                     {
@@ -49,8 +59,19 @@ namespace BlogsConsole
                 {
                     try
                     {   // Create and save a new Blog
-                        Console.Write("Enter a name for a new Blog: ");
-                        var name = Console.ReadLine();
+
+                        var name = "";
+
+                        do
+                        {
+                            Console.Write("Enter a name for a new Blog: ");
+                            name = Console.ReadLine();
+                            if (name == "")
+                            {
+                                logger.Info("Blog name cannot be null");
+                            }
+                        } while (name == "");
+
 
                         var blog = new Blog { Name = name };
 
@@ -67,10 +88,11 @@ namespace BlogsConsole
                 {
                     try
                     {   // Create a post for a selected blog
-                        // display list of current blogs
+
                         // display all Blogs from the database - this is LINQ
                         var query = db.Blogs.OrderBy(b => b.BlogId);
 
+                        // display list of current blogs
                         Console.WriteLine("All blogs in the database:");
                         foreach (var item in query)
                         {
@@ -78,21 +100,54 @@ namespace BlogsConsole
                             Console.WriteLine(item.Name);
                         }
 
-                        Console.Write("Enter blog id to write a post:");
-                        var i = Console.ReadLine();
-                        var id = System.Convert.ToInt32(i);
-                        logger.Info("Blog ID seklected - {id}", id);
+                        var id = 0;
+
+                        do
+                        {
+                            Console.Write("Select the blog you would like to post to: ");
+                            var idString = Console.ReadLine();
+
+                            // validate BlogID is a valid integer
+
+                            if (!Int32.TryParse(idString, out id))
+                            {
+                                logger.Info("Invalid ID entered {idString}", idString);
+                                id = -1;
+                            }
+
+                            // check to see if selected BlogID exists
+
+                            if (!db.Blogs.Any(b => b.BlogId == id))
+                            {
+                                logger.Info("Blog ID - {id} is incorrect or missing", id);
+                                id = -1;
+                            }
+
+                        } while (id < 0);
+
+                        logger.Info("Blog ID selected - {id}", id);
 
                         var blog = db.Blogs.FirstOrDefault(b => b.BlogId == id);
                         var name = blog.Name;
 
-                        Console.Write("Enter a title for a new post to blog " + name + ": ");
-                        var title = Console.ReadLine();
+                        //post title cannot be blank
+
+                        var title = "";
+
+                        do
+                        {
+                            Console.Write("Enter the title for a new post to blog " + name + ": ");
+                            title = Console.ReadLine();
+                            if (title == "")
+                            {
+                                logger.Info("Post title name cannot be null");
+                            }
+                        } while (title == "");
 
                         Console.WriteLine("Enter your post content below: ");
                         var content = Console.ReadLine();
 
-                        var post = new Post { Title = title, Content = content, BlogId = id, Blog = blog};
+                        var post = new Post { Title = title, Content = content, BlogId = id, Blog = blog };
 
                         db.AddPost(post);
                         logger.Info("Post added to BlogID {id} - Title {title}", id, title);
@@ -104,11 +159,28 @@ namespace BlogsConsole
                     }
                 }
 
+                if (menuOption == "4")
+                {
+                    //display posts from blogs
 
-            } while (menuOption == "1" || menuOption == "2" || menuOption == "3");
+                    //submenu options
+
+                    Console.WriteLine("Select the blog's posts to display: ");
+                    Console.WriteLine("0 - Posts from all blogs");
+                    var query = db.Blogs.OrderBy(b => b.BlogId);
+
+                    foreach (var item in query)
+                    {
+                        Console.WriteLine("{id} - Posts from all {name}", item.BlogId, item.Name);
+                    }
+
+                    logger.Info("Option {option} selected", menuOption);
+                }
+
+
+            } while (menuOption == "1" || menuOption == "2" || menuOption == "3" || menuOption == "4");
 
             logger.Info("Program ended");
         }
     }
 }
-
