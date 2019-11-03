@@ -171,8 +171,72 @@ namespace BlogsConsole
 
                     foreach (var item in query)
                     {
-                        Console.WriteLine("{id} - Posts from all {name}", item.BlogId, item.Name);
+                        Console.Write(item.BlogId + " - ");
+                        Console.WriteLine(item.Name);
+                        //Console.WriteLine("{id} - Posts from all {name}", item.BlogId, item.Name);
                     }
+
+                    var id = 0;
+
+                    //do
+                    //{
+                    //    var idString = Console.ReadLine();
+
+                    //    // validate BlogID is a valid integer
+
+                    //if (!Int32.TryParse(idString, out id))
+                    //{
+                    //    logger.Info("Invalid ID entered {idString}", idString);
+                    //    id = -1;
+                    //}
+
+                    //    // check to see if selected BlogID exists
+
+                    //    if (!db.Blogs.Any(b => b.BlogId == id))
+                    //    {
+                    //        logger.Info("Blog ID - {id} is incorrect or missing", id);
+                    //        id = -1;
+                    //    }
+
+                    //} while (id < 0);
+
+                    var idString = Console.ReadLine();
+                    if (!Int32.TryParse(idString, out id))
+                    {
+                        logger.Info("Invalid ID entered {idString}", idString);
+                        id = -1;
+                    }
+                    logger.Info("Option 4 submenu selection - {id}", id);
+                    logger.Info("Querying post");
+
+                    if (id == 0)
+                    {
+                        //prints all posts from all blogs
+                        var queryPost = db.Posts.OrderBy(b => b.BlogId);
+                        foreach (var detail in queryPost)
+                        {
+                            Console.WriteLine();
+                            Console.WriteLine("Blog: " + detail.Blog.Name);
+                            Console.WriteLine("Title: " + detail.Title);
+                            Console.WriteLine("Content: " + detail.Content);
+                        }
+                        Console.WriteLine(queryPost.Count() + " post(s) returned");
+                        Console.WriteLine();
+
+                    } else
+                    {
+                        var queryBlogPost = db.Posts.Where(p => p.BlogId == id);
+                        foreach (var detail in queryBlogPost)
+                        {
+                            Console.WriteLine();
+                            Console.WriteLine("Blog: " + detail.Blog.Name);
+                            Console.WriteLine("Title: " + detail.Title);
+                            Console.WriteLine("Content: " + detail.Content);
+                        }
+                        Console.WriteLine(queryBlogPost.Count() + " post(s) returned");
+                        Console.WriteLine();
+                    }
+
 
                     logger.Info("Option {option} selected", menuOption);
                 }
