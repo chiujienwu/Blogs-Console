@@ -162,9 +162,7 @@ namespace BlogsConsole
                 if (menuOption == "4")
                 {
                     //display posts from blogs
-
                     //submenu options
-
                     Console.WriteLine("Select the blog's posts to display: ");
                     Console.WriteLine("0 - Posts from all blogs");
                     var query = db.Blogs.OrderBy(b => b.BlogId);
@@ -173,33 +171,9 @@ namespace BlogsConsole
                     {
                         Console.Write(item.BlogId + " - ");
                         Console.WriteLine(item.Name);
-                        //Console.WriteLine("{id} - Posts from all {name}", item.BlogId, item.Name);
                     }
 
                     var id = 0;
-
-                    //do
-                    //{
-                    //    var idString = Console.ReadLine();
-
-                    //    // validate BlogID is a valid integer
-
-                    //if (!Int32.TryParse(idString, out id))
-                    //{
-                    //    logger.Info("Invalid ID entered {idString}", idString);
-                    //    id = -1;
-                    //}
-
-                    //    // check to see if selected BlogID exists
-
-                    //    if (!db.Blogs.Any(b => b.BlogId == id))
-                    //    {
-                    //        logger.Info("Blog ID - {id} is incorrect or missing", id);
-                    //        id = -1;
-                    //    }
-
-                    //} while (id < 0);
-
                     var idString = Console.ReadLine();
                     if (!Int32.TryParse(idString, out id))
                     {
@@ -237,10 +211,8 @@ namespace BlogsConsole
                         Console.WriteLine();
                     }
 
-
                     logger.Info("Option {option} selected", menuOption);
                 }
-
 
             } while (menuOption == "1" || menuOption == "2" || menuOption == "3" || menuOption == "4");
 
